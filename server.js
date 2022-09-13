@@ -26,14 +26,16 @@ app.get("/legal", (req, res) => {
 app.get(["/", "/:room"], (req, res) => {
   const room = req.params.room;
 
-  if (room.split('-').length !== 3) {
-    res.sendStatus(404);
-  }
+  if (moment().format('DDMMYYYY') !== room) {
+    if (room.split('-').length !== 3) {
+      res.sendStatus(404);
+    }
 
-  const startDate = moment(room.split('-')[2], 'hsDDMMYYYY')
+    const startDate = moment(room.split('-')[2], 'hsDDMMYYYY')
 
-  if (startDate.isAfter(moment().add(1, 'day')) || startDate.isBefore(moment().subtract(1, 'day'))) {
-    res.sendStatus(404);
+    if (startDate.isAfter(moment().add(1, 'day')) || startDate.isBefore(moment().subtract(1, 'day'))) {
+      res.sendStatus(404);
+    }
   }
 
   return res.sendFile(path.join(__dirname, "www/index.html"));
