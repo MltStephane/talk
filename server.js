@@ -30,7 +30,7 @@ app.get(["/", "/:room"], (req, res) => {
     res.sendStatus(404);
   }
 
-  const startDate = moment(room.split('-')[2], 'hsDDMMYY')
+  const startDate = moment(room.split('-')[2], 'hsDDMMYYYY')
 
   if (startDate.isAfter(moment().add(1, 'day')) || startDate.isBefore(moment().subtract(1, 'day'))) {
     res.sendStatus(404);
