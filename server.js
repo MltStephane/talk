@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const http = require("http");
+const moment = require("moment");
 const app = express();
 const server = http.createServer(app);
 const io = require("socket.io")(server);
@@ -12,12 +13,31 @@ app.use(express.static(path.join(__dirname, "node_modules/vue/dist/")));
 
 // Get PORT from env variable else assign 3000 for development
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, null, () => console.log("Listening on port " + PORT));
 
-app.get("/legal", (req, res) => res.sendFile(path.join(__dirname, "www/legal.html")));
+server.listen(PORT, null, () => {
+  console.log("Listening on port " + PORT);
+});
+
+app.get("/legal", (req, res) => {
+  return res.sendFile(path.join(__dirname, "www/legal.html"));
+});
 
 // All URL patterns should be served with the same file.
-app.get(["/", "/:room"], (req, res) => res.sendFile(path.join(__dirname, "www/index.html")));
+app.get(["/", "/:room"], (req, res) => {
+  const room = req.params.room;
+
+  if (room.split('-').length !== 3) {
+    res.sendStatus(404);
+  }
+
+  const startDate = moment(room.split('-')[2], 'hsDDMMYY')
+
+  if (startDate.isAfter(moment().add(1, 'day')) || startDate.isBefore(moment().subtract(1, 'day'))) {
+    res.sendStatus(404);
+  }
+
+  return res.sendFile(path.join(__dirname, "www/index.html"));
+});
 
 const channels = {};
 const sockets = {};
